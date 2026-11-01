@@ -6,7 +6,7 @@ struct DepView: ParsableCommand {
         commandName: "depview",
         abstract: "Visualize Swift package dependencies.",
         version: "0.1.0",
-        subcommands: [Tree.self],
+        subcommands: [Tree.self, Why.self, Export.self, Stats.self],
         defaultSubcommand: Tree.self
     )
 }

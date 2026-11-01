@@ -1,0 +1,10 @@
+␛[1mMedium␛[0m
+␛[2m└── ␛[0mswift-dependencies ␛[36m1.17.2␛[0m
+␛[2m    ├── ␛[0mcombine-schedulers ␛[36m1.2.2␛[0m
+␛[2m    │   ├── ␛[0mswift-concurrency-extras ␛[36m1.4.3␛[0m
+␛[2m    │   └── ␛[0mswift-issue-reporting ␛[36m2.1.2␛[0m
+␛[2m    ├── ␛[0mswift-clocks ␛[36m1.1.1␛[0m
+␛[2m    │   ├── ␛[0mswift-concurrency-extras ␛[36m1.4.3␛[0m ␛[2m(seen above)␛[0m
+␛[2m    │   └── ␛[0mswift-issue-reporting ␛[36m2.1.2␛[0m ␛[2m(seen above)␛[0m
+␛[2m    ├── ␛[0mswift-concurrency-extras ␛[36m1.4.3␛[0m ␛[2m(seen above)␛[0m
+␛[2m    └── ␛[0mswift-issue-reporting ␛[36m2.1.2␛[0m ␛[2m(seen above)␛[0m

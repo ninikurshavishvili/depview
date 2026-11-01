@@ -1,15 +1,18 @@
 import ArgumentParser
 import DepViewCore
-import Foundation
 
 struct Tree: ParsableCommand {
     static let configuration = CommandConfiguration(abstract: "Print the dependency tree.")
 
-    @Argument(help: "Folder containing Package.swift.")
-    var path: String = "."
+    @OptionGroup var project: ProjectOptions
 
     @Option(help: "Maximum depth to print (1 = direct dependencies only).")
     var depth: Int?
+
+    @Flag(help: "Hide version numbers.")
+    var noVersions = false
+
+    @OptionGroup var color: ColorOptions
 
     func validate() throws {
         if let depth, depth < 1 {
@@ -18,8 +21,8 @@ struct Tree: ParsableCommand {
     }
 
     func run() throws {
-        let folder = URL(fileURLWithPath: path)
-        let graph = try SPMLoader().load(from: folder)
-        print(TreeRenderer(maxDepth: depth).render(graph))
+        let graph = try project.loadGraph()
+        let renderer = TreeRenderer(maxDepth: depth, showVersions: !noVersions, style: color.style)
+        print(renderer.render(graph))
     }
 }

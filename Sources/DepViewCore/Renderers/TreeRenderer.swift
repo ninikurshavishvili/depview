@@ -1,11 +1,18 @@
 /// Draws a graph as an indented tree with box-drawing characters.
 public struct TreeRenderer {
     public var maxDepth: Int?
-    public init(maxDepth: Int? = nil) { self.maxDepth = maxDepth }
+    public var showVersions: Bool
+    public var style: Style
+
+    public init(maxDepth: Int? = nil, showVersions: Bool = true, style: Style = .plain) {
+        self.maxDepth = maxDepth
+        self.showVersions = showVersions
+        self.style = style
+    }
 
     public func render(_ graph: DependencyGraph) -> String {
         guard let root = graph.nodes[graph.rootID] else { return "" }
-        var lines = [root.name]
+        var lines = [style.bold(root.name)]
         // Packages whose children are already printed. A package cut off by maxDepth
         // isn't added, so a later, shallower copy still shows its children.
         var expanded: Set<String> = [root.id]
@@ -14,11 +21,11 @@ public struct TreeRenderer {
             let kids = node.children.compactMap { graph.nodes[$0] }
             for (index, child) in kids.enumerated() {
                 let isLast = index == kids.count - 1
-                let version = child.version.map { " \($0)" } ?? ""
                 let shownAbove = expanded.contains(child.id)
-                lines.append(prefix + (isLast ? "└── " : "├── ")
-                             + child.name + version
-                             + (shownAbove ? " (seen above)" : ""))
+                var line = style.dim(prefix + (isLast ? "└── " : "├── ")) + child.name
+                if showVersions, let version = child.version { line += " " + style.cyan(version) }
+                if shownAbove { line += " " + style.dim("(seen above)") }
+                lines.append(line)
                 let canExpand = maxDepth.map { depth < $0 } ?? true
                 if canExpand && !shownAbove {
                     expanded.insert(child.id)

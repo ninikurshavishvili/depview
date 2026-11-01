@@ -1,0 +1,13 @@
+{
+  "direct" : 1,
+  "maxDepth" : 3,
+  "mostShared" : {
+    "packages" : [
+      "swift-concurrency-extras",
+      "swift-issue-reporting"
+    ],
+    "usedBy" : 3
+  },
+  "packages" : 5,
+  "transitive" : 4
+}
