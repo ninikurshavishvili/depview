@@ -1,0 +1,26 @@
+{
+  "identity": "depview",
+  "name": "depview",
+  "url": "/Users/dev/Projects/depview",
+  "version": "unspecified",
+  "path": "/Users/dev/Projects/depview",
+  "traits": [
+    "default"
+  ],
+  "dependencies": [
+    {
+      "identity": "swift-argument-parser",
+      "name": "swift-argument-parser",
+      "url": "https://github.com/apple/swift-argument-parser",
+      "version": "1.8.2",
+      "path": "/Users/dev/Projects/depview/.build/checkouts/swift-argument-parser",
+      "traits": [
+        "default"
+      ],
+      "dependencies": [
+
+      ]
+    }
+  ]
+}
+
