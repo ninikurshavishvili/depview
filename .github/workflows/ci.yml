@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+# A new push to the same branch or PR cancels the run still in progress.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Xcode ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Oldest Xcode depview supports (swift-tools-version 6.0),
+          # which is what Homebrew users need to build it.
+          - name: "16.0 (oldest supported)"
+            os: macos-15
+            developer-dir: /Applications/Xcode_16.0.app/Contents/Developer
+          - name: latest
+            os: macos-26
+            developer-dir: /Applications/Xcode.app/Contents/Developer
+    runs-on: ${{ matrix.os }}
+    env:
+      DEVELOPER_DIR: ${{ matrix.developer-dir }}
+    steps:
+      - uses: actions/checkout@v7
+      - run: swift --version
+      - run: swift build
+      - run: swift test
