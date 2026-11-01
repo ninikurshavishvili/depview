@@ -1,0 +1,130 @@
+{
+  "identity": "medium",
+  "name": "Medium",
+  "url": "/Users/dev/Projects/Medium",
+  "version": "unspecified",
+  "path": "/Users/dev/Projects/Medium",
+  "traits": [
+    "default"
+  ],
+  "dependencies": [
+    {
+      "identity": "swift-dependencies",
+      "name": "swift-dependencies",
+      "url": "https://github.com/pointfreeco/swift-dependencies",
+      "version": "1.17.2",
+      "path": "/Users/dev/Projects/Medium/.build/checkouts/swift-dependencies",
+      "traits": [
+        "FoundationNetworking",
+        "Foundation",
+        "CombineSchedulers",
+        "Clocks"
+      ],
+      "dependencies": [
+        {
+          "identity": "combine-schedulers",
+          "name": "combine-schedulers",
+          "url": "https://github.com/pointfreeco/combine-schedulers",
+          "version": "1.2.2",
+          "path": "/Users/dev/Projects/Medium/.build/checkouts/combine-schedulers",
+          "traits": [
+
+          ],
+          "dependencies": [
+            {
+              "identity": "swift-concurrency-extras",
+              "name": "swift-concurrency-extras",
+              "url": "https://github.com/pointfreeco/swift-concurrency-extras",
+              "version": "1.4.3",
+              "path": "/Users/dev/Projects/Medium/.build/checkouts/swift-concurrency-extras",
+              "traits": [
+                "default"
+              ],
+              "dependencies": [
+
+              ]
+            },
+            {
+              "identity": "swift-issue-reporting",
+              "name": "swift-issue-reporting",
+              "url": "https://github.com/pointfreeco/swift-issue-reporting",
+              "version": "2.1.2",
+              "path": "/Users/dev/Projects/Medium/.build/checkouts/swift-issue-reporting",
+              "traits": [
+                "default"
+              ],
+              "dependencies": [
+
+              ]
+            }
+          ]
+        },
+        {
+          "identity": "swift-clocks",
+          "name": "swift-clocks",
+          "url": "https://github.com/pointfreeco/swift-clocks",
+          "version": "1.1.1",
+          "path": "/Users/dev/Projects/Medium/.build/checkouts/swift-clocks",
+          "traits": [
+            "default"
+          ],
+          "dependencies": [
+            {
+              "identity": "swift-concurrency-extras",
+              "name": "swift-concurrency-extras",
+              "url": "https://github.com/pointfreeco/swift-concurrency-extras",
+              "version": "1.4.3",
+              "path": "/Users/dev/Projects/Medium/.build/checkouts/swift-concurrency-extras",
+              "traits": [
+                "default"
+              ],
+              "dependencies": [
+
+              ]
+            },
+            {
+              "identity": "swift-issue-reporting",
+              "name": "swift-issue-reporting",
+              "url": "https://github.com/pointfreeco/swift-issue-reporting",
+              "version": "2.1.2",
+              "path": "/Users/dev/Projects/Medium/.build/checkouts/swift-issue-reporting",
+              "traits": [
+                "default"
+              ],
+              "dependencies": [
+
+              ]
+            }
+          ]
+        },
+        {
+          "identity": "swift-concurrency-extras",
+          "name": "swift-concurrency-extras",
+          "url": "https://github.com/pointfreeco/swift-concurrency-extras",
+          "version": "1.4.3",
+          "path": "/Users/dev/Projects/Medium/.build/checkouts/swift-concurrency-extras",
+          "traits": [
+            "default"
+          ],
+          "dependencies": [
+
+          ]
+        },
+        {
+          "identity": "swift-issue-reporting",
+          "name": "swift-issue-reporting",
+          "url": "https://github.com/pointfreeco/swift-issue-reporting",
+          "version": "2.1.2",
+          "path": "/Users/dev/Projects/Medium/.build/checkouts/swift-issue-reporting",
+          "traits": [
+            "default"
+          ],
+          "dependencies": [
+
+          ]
+        }
+      ]
+    }
+  ]
+}
+
