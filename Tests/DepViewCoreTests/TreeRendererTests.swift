@@ -23,12 +23,32 @@ struct TreeRendererTests {
 
     @Test func mediumTree() throws {
         let graph = try SPMLoader.parse(fixture("spm-medium"))
-        try expectSnapshot(TreeRenderer().render(graph), named: "spm-medium")
+        try expectSnapshot(TreeRenderer().render(graph), named: "spm-medium.tree.txt")
     }
 
     @Test func mediumTreeAtDepthTwo() throws {
         let graph = try SPMLoader.parse(fixture("spm-medium"))
-        try expectSnapshot(TreeRenderer(maxDepth: 2).render(graph), named: "spm-medium.depth-2")
+        try expectSnapshot(TreeRenderer(maxDepth: 2).render(graph), named: "spm-medium.depth-2.tree.txt")
+    }
+
+    // ␛ stands in for the escape character, so the snapshot file is readable.
+    @Test func mediumTreeInColor() throws {
+        let graph = try SPMLoader.parse(fixture("spm-medium"))
+        let output = TreeRenderer(style: .ansi).render(graph).replacingOccurrences(of: "\u{1B}", with: "␛")
+        try expectSnapshot(output, named: "spm-medium.color.tree.txt")
+    }
+
+    @Test func plainStyleHasNoEscapeCodes() throws {
+        let graph = try SPMLoader.parse(fixture("spm-medium"))
+        #expect(!TreeRenderer(style: .plain).render(graph).contains("\u{1B}"))
+    }
+
+    @Test func hidesVersions() throws {
+        let graph = try SPMLoader.parse(fixture("spm-tiny"))
+        #expect(TreeRenderer(showVersions: false).render(graph) == """
+            depview
+            └── swift-argument-parser
+            """)
     }
 
     @Test func depthOneShowsDirectDependenciesOnly() throws {

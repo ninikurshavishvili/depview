@@ -1,0 +1,18 @@
+digraph dependencies {
+    node [shape=box];
+    "medium" [label="Medium"];
+    "swift-dependencies" [label="swift-dependencies\n1.17.2"];
+    "combine-schedulers" [label="combine-schedulers\n1.2.2"];
+    "swift-concurrency-extras" [label="swift-concurrency-extras\n1.4.3"];
+    "swift-issue-reporting" [label="swift-issue-reporting\n2.1.2"];
+    "swift-clocks" [label="swift-clocks\n1.1.1"];
+    "medium" -> "swift-dependencies";
+    "swift-dependencies" -> "combine-schedulers";
+    "swift-dependencies" -> "swift-clocks";
+    "swift-dependencies" -> "swift-concurrency-extras";
+    "swift-dependencies" -> "swift-issue-reporting";
+    "combine-schedulers" -> "swift-concurrency-extras";
+    "combine-schedulers" -> "swift-issue-reporting";
+    "swift-clocks" -> "swift-concurrency-extras";
+    "swift-clocks" -> "swift-issue-reporting";
+}

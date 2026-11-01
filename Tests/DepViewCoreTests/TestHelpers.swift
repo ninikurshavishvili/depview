@@ -14,11 +14,10 @@ private let fixturesFolder = URL(fileURLWithPath: #filePath)
     .deletingLastPathComponent()
     .appendingPathComponent("Fixtures")
 
-/// Compares `output` with `Fixtures/<name>.tree.txt`. If that file doesn't exist,
-/// writes it and fails, so you can check the new snapshot and run the tests again.
-func expectSnapshot(_ output: String, named name: String,
+/// Compares `output` with `Fixtures/<fileName>`, e.g. "spm-medium.tree.txt". If that file
+/// doesn't exist, writes it and fails, so you can check the new snapshot and run the tests again.
+func expectSnapshot(_ output: String, named fileName: String,
                     sourceLocation: SourceLocation = #_sourceLocation) throws {
-    let fileName = "\(name).tree.txt"
     let file = fixturesFolder.appendingPathComponent(fileName)
     guard FileManager.default.fileExists(atPath: file.path) else {
         try (output + "\n").write(to: file, atomically: true, encoding: .utf8)

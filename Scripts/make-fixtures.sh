@@ -3,7 +3,7 @@
 # `swift package show-dependencies --format json` output.
 #
 # Run it when SwiftPM changes its JSON format, then review the diff and run
-# swift test. If a tree snapshot changes on purpose, delete its .tree.txt file
+# swift test. If a snapshot changes on purpose, delete its file in Fixtures
 # and run swift test again to write a new one.
 #
 # Usage: Scripts/make-fixtures.sh

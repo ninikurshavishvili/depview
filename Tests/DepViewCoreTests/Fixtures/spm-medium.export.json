@@ -1,0 +1,65 @@
+{
+  "packages" : [
+    {
+      "dependencies" : [
+        "swift-dependencies"
+      ],
+      "id" : "medium",
+      "name" : "Medium",
+      "url" : "/Users/dev/Projects/Medium",
+      "version" : null
+    },
+    {
+      "dependencies" : [
+        "combine-schedulers",
+        "swift-clocks",
+        "swift-concurrency-extras",
+        "swift-issue-reporting"
+      ],
+      "id" : "swift-dependencies",
+      "name" : "swift-dependencies",
+      "url" : "https://github.com/pointfreeco/swift-dependencies",
+      "version" : "1.17.2"
+    },
+    {
+      "dependencies" : [
+        "swift-concurrency-extras",
+        "swift-issue-reporting"
+      ],
+      "id" : "combine-schedulers",
+      "name" : "combine-schedulers",
+      "url" : "https://github.com/pointfreeco/combine-schedulers",
+      "version" : "1.2.2"
+    },
+    {
+      "dependencies" : [
+
+      ],
+      "id" : "swift-concurrency-extras",
+      "name" : "swift-concurrency-extras",
+      "url" : "https://github.com/pointfreeco/swift-concurrency-extras",
+      "version" : "1.4.3"
+    },
+    {
+      "dependencies" : [
+
+      ],
+      "id" : "swift-issue-reporting",
+      "name" : "swift-issue-reporting",
+      "url" : "https://github.com/pointfreeco/swift-issue-reporting",
+      "version" : "2.1.2"
+    },
+    {
+      "dependencies" : [
+        "swift-concurrency-extras",
+        "swift-issue-reporting"
+      ],
+      "id" : "swift-clocks",
+      "name" : "swift-clocks",
+      "url" : "https://github.com/pointfreeco/swift-clocks",
+      "version" : "1.1.1"
+    }
+  ],
+  "root" : "medium",
+  "schemaVersion" : 1
+}
