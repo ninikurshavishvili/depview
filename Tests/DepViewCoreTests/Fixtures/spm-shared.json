@@ -1,0 +1,63 @@
+{
+  "identity": "app",
+  "name": "App",
+  "url": "/Users/dev/Projects/App",
+  "version": "unspecified",
+  "path": "/Users/dev/Projects/App",
+  "traits": [
+    "default"
+  ],
+  "dependencies": [
+    {
+      "identity": "networking",
+      "name": "Networking",
+      "url": "/Users/dev/Projects/Networking",
+      "version": "unspecified",
+      "path": "/Users/dev/Projects/Networking",
+      "traits": [
+        "default"
+      ],
+      "dependencies": [
+        {
+          "identity": "logging",
+          "name": "Logging",
+          "url": "/Users/dev/Projects/Logging",
+          "version": "unspecified",
+          "path": "/Users/dev/Projects/Logging",
+          "traits": [
+            "default"
+          ],
+          "dependencies": [
+
+          ]
+        }
+      ]
+    },
+    {
+      "identity": "analytics",
+      "name": "Analytics",
+      "url": "/Users/dev/Projects/Analytics",
+      "version": "unspecified",
+      "path": "/Users/dev/Projects/Analytics",
+      "traits": [
+        "default"
+      ],
+      "dependencies": [
+        {
+          "identity": "logging",
+          "name": "Logging",
+          "url": "/Users/dev/Projects/Logging",
+          "version": "unspecified",
+          "path": "/Users/dev/Projects/Logging",
+          "traits": [
+            "default"
+          ],
+          "dependencies": [
+
+          ]
+        }
+      ]
+    }
+  ]
+}
+
