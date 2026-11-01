@@ -26,6 +26,33 @@ struct SPMLoaderTests {
         #expect(graph.nodes["analytics"]?.children == ["logging"])
     }
 
+    @Test func parsesMediumPackage() throws {
+        let graph = try SPMLoader.parse(fixture("spm-medium"))
+        #expect(graph.rootID == "medium")
+        // The JSON has 10 entries, because shared packages repeat under each parent.
+        #expect(graph.nodes.count == 6)
+
+        let dependencies = try #require(graph.nodes["swift-dependencies"])
+        #expect(dependencies.version == "1.17.2")
+        #expect(dependencies.url == "https://github.com/pointfreeco/swift-dependencies")
+        #expect(dependencies.children == [
+            "combine-schedulers", "swift-clocks", "swift-concurrency-extras", "swift-issue-reporting",
+        ])
+
+        #expect(graph.nodes["swift-clocks"]?.version == "1.1.1")
+        #expect(graph.nodes["combine-schedulers"]?.url == "https://github.com/pointfreeco/combine-schedulers")
+    }
+
+    // Each of these is listed three times in the JSON, once under each package
+    // that uses it, but becomes one node with all three as parents.
+    @Test(arguments: ["swift-concurrency-extras", "swift-issue-reporting"])
+    func mediumSharedPackageIsOneNode(_ id: String) throws {
+        let graph = try SPMLoader.parse(fixture("spm-medium"))
+        let parents = graph.nodes.values.filter { $0.children.contains(id) }.map(\.id)
+        #expect(parents.sorted() == ["combine-schedulers", "swift-clocks", "swift-dependencies"])
+        #expect(graph.nodes[id]?.children == [])
+    }
+
     @Test func skipsProgressLinesBeforeJSON() throws {
         let output = Data("Fetching https://github.com/apple/swift-argument-parser\n".utf8) + (try fixture("spm-tiny"))
         #expect(try SPMLoader.parse(output).nodes.count == 2)

@@ -1,0 +1,6 @@
+Medium
+└── swift-dependencies 1.17.2
+    ├── combine-schedulers 1.2.2
+    ├── swift-clocks 1.1.1
+    ├── swift-concurrency-extras 1.4.3
+    └── swift-issue-reporting 2.1.2

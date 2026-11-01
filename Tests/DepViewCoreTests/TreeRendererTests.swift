@@ -21,6 +21,16 @@ struct TreeRendererTests {
             """)
     }
 
+    @Test func mediumTree() throws {
+        let graph = try SPMLoader.parse(fixture("spm-medium"))
+        try expectSnapshot(TreeRenderer().render(graph), named: "spm-medium")
+    }
+
+    @Test func mediumTreeAtDepthTwo() throws {
+        let graph = try SPMLoader.parse(fixture("spm-medium"))
+        try expectSnapshot(TreeRenderer(maxDepth: 2).render(graph), named: "spm-medium.depth-2")
+    }
+
     @Test func depthOneShowsDirectDependenciesOnly() throws {
         let graph = try SPMLoader.parse(fixture("spm-shared"))
         #expect(TreeRenderer(maxDepth: 1).render(graph) == """
