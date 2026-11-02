@@ -3,8 +3,13 @@
 # `swift package show-dependencies --format json` output.
 #
 # Run it when SwiftPM changes its JSON format, then review the diff and run
-# swift test. If a snapshot changes on purpose, delete its file in Fixtures
+# swift test. SwiftPM lists "traits" in no fixed order, so a diff that only
+# reorders them can be thrown away. If a snapshot changes on purpose, delete its file in Fixtures
 # and run swift test again to write a new one.
+#
+# The other xcode-* fixtures (xcode-demo.pbxproj, xcode-resolved-v*.json and
+# xcode-workspace-state.json) are written by hand in the shape Xcode writes
+# them, so they aren't rebuilt here.
 #
 # Usage: Scripts/make-fixtures.sh
 set -euo pipefail
@@ -89,3 +94,10 @@ let package = Package(
 EOF
 echo "import Dependencies" > "$work/Medium/Sources/Medium/Medium.swift"
 save "$work/Medium" "$work" "$fake" spm-medium
+
+# xcode-dump-package: the manifest of swift-clocks, one of the packages
+# spm-medium downloaded. The Xcode loader reads each package's manifest this way.
+(cd "$work/Medium/.build/checkouts/swift-clocks" \
+    && swift package --scratch-path "$work/scratch" dump-package) \
+    | sed "s|$work|$fake|g" > "$fixtures/xcode-dump-package.json"
+echo "Wrote Fixtures/xcode-dump-package.json"
