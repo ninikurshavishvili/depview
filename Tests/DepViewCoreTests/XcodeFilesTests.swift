@@ -10,8 +10,9 @@ struct XcodeFilesTests {
         let demo = try DemoProject(resolved: false)
         defer { demo.remove() }
         let references = try XcodeProjectFile.packageReferences(in: demo.project)
-        #expect(references.map(\.identity) == ["swift-dependencies", "feature", "settings"])
-        #expect(references.map(\.name) == ["swift-dependencies", "Feature", "Settings"])
+        #expect(references.map(\.identity) == ["swift-dependencies", "feature", "settings", "logging"])
+        #expect(references.map(\.name) == ["swift-dependencies", "Feature", "Settings", "Logging"])
+        #expect(references.map(\.isFolderEntry) == [false, false, true, true])
         #expect(references[0].source == .remote(url: "https://github.com/pointfreeco/swift-dependencies"))
         // Settings' path is relative to its group, Packages.
         let folders = references.compactMap { reference -> String? in
@@ -21,7 +22,15 @@ struct XcodeFilesTests {
         #expect(folders == [
             demo.folder.appendingPathComponent("Packages/Feature").path,
             demo.folder.appendingPathComponent("Packages/Settings").path,
+            demo.folder.appendingPathComponent("Packages/Logging").path,
         ])
+    }
+
+    // Dependencies comes from a package reference, so it names its package and isn't listed.
+    @Test func readsProductsLinkedFromPackageFolders() throws {
+        let demo = try DemoProject(resolved: false)
+        defer { demo.remove() }
+        #expect(try XcodeProjectFile.linkedProducts(in: demo.project) == ["Settings", "Tools", "LintPlugin"])
     }
 
     @Test func unreadableProjectThrows() throws {

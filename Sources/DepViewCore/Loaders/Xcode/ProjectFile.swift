@@ -10,6 +10,9 @@ struct PackageReference: Equatable {
     let identity: String
     let name: String
     let source: Source
+    /// A package folder in the navigator or the workspace, not a package reference.
+    /// The app uses it only if one of its targets links one of the package's products.
+    var isFolderEntry = false
 
     var isRemote: Bool {
         if case .remote = source { return true }
@@ -19,26 +22,19 @@ struct PackageReference: Equatable {
 
 extension PackageReference {
     /// The package in `folder`, named after the folder the way SwiftPM names it.
-    init(localFolder folder: URL) {
+    init(localFolder folder: URL, isFolderEntry: Bool = false) {
         let folder = folder.standardizedFileURL
         self.init(identity: packageIdentity(for: folder.path), name: folder.lastPathComponent,
-                  source: .local(folder: folder))
+                  source: .local(folder: folder), isFolderEntry: isFolderEntry)
     }
 }
 
 /// Reads the parts of .xcodeproj and .xcworkspace files that list packages and projects.
 enum XcodeProjectFile {
     /// The package references in project.pbxproj, in the order Xcode lists them, then the
-    /// package folders in the project navigator. project.pbxproj is an old-style property
-    /// list, so Foundation reads it directly.
+    /// package folders in the project navigator.
     static func packageReferences(in project: URL) throws -> [PackageReference] {
-        let file = project.appendingPathComponent("project.pbxproj")
-        guard let data = try? Data(contentsOf: file),
-              let plist = try? PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Any],
-              let objects = plist["objects"] as? [String: [String: Any]],
-              let rootID = plist["rootObject"] as? String else {
-            throw DepViewError.unreadableProject(path: project.path)
-        }
+        let (objects, rootID) = try Self.objects(in: project)
         // Local package paths are relative to the folder that holds the .xcodeproj.
         let base = project.deletingLastPathComponent()
         let ids = objects[rootID]?["packageReferences"] as? [String] ?? []
@@ -84,13 +80,41 @@ enum XcodeProjectFile {
         }
         if let mainGroup = objects[rootID]?["mainGroup"] as? String {
             for folder in packageFolders(in: mainGroup, groupFolder: base) {
-                let reference = PackageReference(localFolder: folder)
+                let reference = PackageReference(localFolder: folder, isFolderEntry: true)
                 if !references.contains(where: { $0.identity == reference.identity }) {
                     references.append(reference)
                 }
             }
         }
         return references
+    }
+
+    /// The products targets link from package folders. Products from package references
+    /// name their package; these don't, e.g. { productName = Timeline; }.
+    static func linkedProducts(in project: URL) throws -> Set<String> {
+        let (objects, _) = try Self.objects(in: project)
+        var products: Set<String> = []
+        for object in objects.values
+        where object["isa"] as? String == "XCSwiftPackageProductDependency" && object["package"] == nil {
+            if let name = object["productName"] as? String {
+                // Build tool plugins are listed as "plugin:<name>".
+                products.insert(name.hasPrefix("plugin:") ? String(name.dropFirst(7)) : name)
+            }
+        }
+        return products
+    }
+
+    /// project.pbxproj's objects by id, and the id of the project object.
+    /// project.pbxproj is an old-style property list, so Foundation reads it directly.
+    private static func objects(in project: URL) throws -> (objects: [String: [String: Any]], rootID: String) {
+        let file = project.appendingPathComponent("project.pbxproj")
+        guard let data = try? Data(contentsOf: file),
+              let plist = try? PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Any],
+              let objects = plist["objects"] as? [String: [String: Any]],
+              let rootID = plist["rootObject"] as? String else {
+            throw DepViewError.unreadableProject(path: project.path)
+        }
+        return (objects, rootID)
     }
 
     /// The .xcodeproj files listed in a workspace's contents.xcworkspacedata.

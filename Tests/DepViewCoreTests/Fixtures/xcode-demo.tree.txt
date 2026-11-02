@@ -11,4 +11,5 @@ Demo
 ├── Feature
 │   └── swift-dependencies 1.17.2 (seen above)
 └── Settings
-    └── Feature (seen above)
+    ├── Feature (seen above)
+    └── Logging

@@ -1,7 +1,7 @@
 import Foundation
 
 /// Every failure depview reports, each with a message and a hint for fixing it.
-public enum DepViewError: LocalizedError, Equatable {
+public enum DepViewError: LocalizedError, Equatable, Sendable {
     case folderNotFound(path: String)
     case noPackageManifest(path: String)
     case swiftNotFound
@@ -30,12 +30,13 @@ public enum DepViewError: LocalizedError, Equatable {
         }
     }
 
-    public var recoverySuggestion: String? {
+    /// How to fix it. Not optional, so a new case can't be added without one.
+    public var hint: String {
         switch self {
         case .folderNotFound: "Check the path, or run depview from inside the project folder."
         case .noPackageManifest: "Pass the folder that contains Package.swift."
         case .swiftNotFound: "Install Xcode, then run: xcode-select --install"
-        case .swiftCommandFailed: "Run swift package resolve in that folder and fix the error it shows."
+        case .swiftCommandFailed: "Fix the error above. swift package resolve in that folder shows SwiftPM's full output."
         case .unreadableOutput: "Please open an issue with your Swift version (swift --version)."
         case .packageNotFound(_, let suggestions) where suggestions.isEmpty:
             "Run depview tree to see every package's name."
@@ -50,8 +51,19 @@ public enum DepViewError: LocalizedError, Equatable {
         }
     }
 
-    // Argument Parser prints only errorDescription, so the hint goes in it too.
-    public var errorDescription: String? {
-        recoverySuggestion.map { "\(message)\nHint: \($0)" } ?? message
+    /// 1 when something the user gave needs fixing, like a path or a package name;
+    /// 2 when a tool depview runs failed. Argument Parser uses 64 for a wrong command line.
+    public var exitCode: Int32 {
+        switch self {
+        case .folderNotFound, .noPackageManifest, .packageNotFound, .cannotWriteFile, .noProject,
+             .severalProjects, .unreadableProject, .derivedDataNotFound:
+            1
+        case .swiftNotFound, .swiftCommandFailed, .unreadableOutput:
+            2
+        }
     }
+
+    public var recoverySuggestion: String? { hint }
+
+    public var errorDescription: String? { "\(message)\nHint: \(hint)" }
 }

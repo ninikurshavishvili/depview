@@ -45,9 +45,12 @@ public struct XcodeLoader: GraphLoader {
 
         var direct: [PackageReference] = []
         let references = try projectFiles.flatMap { try XcodeProjectFile.packageReferences(in: $0) }
-            + packageFolders.map(PackageReference.init(localFolder:))
+            + packageFolders.map { PackageReference(localFolder: $0, isFolderEntry: true) }
         for reference in references where !direct.contains(where: { $0.identity == reference.identity }) {
             direct.append(reference)
+        }
+        let linkedProducts = try projectFiles.reduce(into: Set<String>()) {
+            $0.formUnion(try XcodeProjectFile.linkedProducts(in: $1))
         }
 
         var pins: [String: PackagePin] = [:]
@@ -122,11 +125,20 @@ public struct XcodeLoader: GraphLoader {
                                        url: pins[id]?.location ?? package.url, children: children)
         }
 
+        // A package folder is one of the app's own dependencies only if a target links one of
+        // its products. Otherwise only other packages use it, like IceCubesApp's MediaUI.
+        let appUses = direct.filter { reference in
+            guard reference.isFolderEntry, let manifest = loaded[reference.identity] else { return true }
+            return !linkedProducts.isDisjoint(with: manifest.products)
+        }
+
         // "retrace.xcodeproj" can't clash with a package identity, even one named like the app.
         let rootID = project.lastPathComponent.lowercased()
         nodes[rootID] = DependencyNode(id: rootID, name: name, version: nil, url: project.path,
-                                       children: direct.map(\.identity))
-        return (DependencyGraph(rootID: rootID, nodes: nodes), warnings)
+                                       children: appUses.map(\.identity))
+        // Leave out packages the app doesn't reach, so why and stats never find them.
+        let reachable = Set(DependencyGraph(rootID: rootID, nodes: nodes).reachableNodes().map(\.id))
+        return (DependencyGraph(rootID: rootID, nodes: nodes.filter { reachable.contains($0.key) }), warnings)
     }
 
     /// Packages in workspace-state.json in the project's DerivedData folder,
