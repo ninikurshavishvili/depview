@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "CombineSchedulers",
+        "repositoryURL": "https://github.com/pointfreeco/combine-schedulers.git",
+        "state": {
+          "branch": null,
+          "revision": "114354e8c1667a2edc4993700fb9fa4f90157b56",
+          "version": "1.2.2"
+        }
+      },
+      {
+        "package": "swift-dependencies",
+        "repositoryURL": "https://github.com/pointfreeco/swift-dependencies",
+        "state": {
+          "branch": null,
+          "revision": "2f83b70a6fbf45795dd40ccaa907bad3c8d93fe1",
+          "version": "1.17.2"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

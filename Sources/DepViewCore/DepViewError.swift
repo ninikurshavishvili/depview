@@ -9,6 +9,10 @@ public enum DepViewError: LocalizedError, Equatable {
     case unreadableOutput
     case packageNotFound(name: String, suggestions: [String])
     case cannotWriteFile(path: String)
+    case noProject(path: String)
+    case severalProjects(path: String, names: [String])
+    case unreadableProject(path: String)
+    case derivedDataNotFound(path: String)
 
     public var message: String {
         switch self {
@@ -19,6 +23,10 @@ public enum DepViewError: LocalizedError, Equatable {
         case .unreadableOutput: "SwiftPM printed a dependency list depview can't read."
         case .packageNotFound(let name, _): "No package named \(name) in the dependency graph."
         case .cannotWriteFile(let path): "Couldn't write \(path)."
+        case .noProject(let path): "No Package.swift or Xcode project in \(path)."
+        case .severalProjects(let path, let names): "\(path) has several Xcode projects: \(names.joined(separator: ", "))."
+        case .unreadableProject(let path): "Couldn't read \(path)."
+        case .derivedDataNotFound(let path): "No resolved packages in \(path)."
         }
     }
 
@@ -33,6 +41,12 @@ public enum DepViewError: LocalizedError, Equatable {
             "Run depview tree to see every package's name."
         case .packageNotFound(_, let suggestions): "Did you mean \(suggestions.joined(separator: ", "))?"
         case .cannotWriteFile: "Check that the folder exists and that you can write to it."
+        case .noProject: "Pass a folder with Package.swift, an .xcodeproj or an .xcworkspace."
+        case .severalProjects(let path, let names):
+            "Pass the one you want, e.g. \(URL(fileURLWithPath: path).appendingPathComponent(names[0]).path)"
+        case .unreadableProject: "Check that Xcode can open it, then try again."
+        case .derivedDataNotFound:
+            "Pass the folder you gave xcodebuild -derivedDataPath, after its packages are resolved."
         }
     }
 

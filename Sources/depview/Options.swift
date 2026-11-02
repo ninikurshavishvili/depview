@@ -2,13 +2,27 @@ import ArgumentParser
 import DepViewCore
 import Foundation
 
-/// The project folder that every command reads.
+/// The project that every command reads.
 struct ProjectOptions: ParsableArguments {
-    @Argument(help: "Folder containing Package.swift.")
+    @Argument(help: "Folder with Package.swift, an .xcodeproj or an .xcworkspace.")
     var path: String = "."
 
+    @Option(help: ArgumentHelp("Xcode projects only: the DerivedData folder, if you built with xcodebuild -derivedDataPath.",
+                               valueName: "folder"))
+    var derivedData: String?
+
     func loadGraph() throws -> DependencyGraph {
-        try SPMLoader().load(from: URL(fileURLWithPath: path))
+        switch try ProjectDetector.detect(URL(fileURLWithPath: path)) {
+        case .swiftPackage(let folder):
+            return try SPMLoader().load(from: folder)
+        case .xcode(let project):
+            let loader = XcodeLoader(derivedData: derivedData.map { URL(fileURLWithPath: $0) })
+            let (graph, warnings) = try loader.loadWithWarnings(from: project)
+            for warning in warnings {
+                FileHandle.standardError.write(Data("Warning: \(warning)\n".utf8))
+            }
+            return graph
+        }
     }
 }
 
