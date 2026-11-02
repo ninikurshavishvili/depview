@@ -17,9 +17,10 @@ func temporaryFolder() throws -> URL {
 
 /// A throwaway Demo app in a temporary folder, built from the xcode-* fixtures. Demo uses
 /// swift-dependencies and two local packages: Packages/Feature, a package reference, and
-/// Packages/Settings, a folder dragged into the project. The workspace also lists a Tools
-/// package folder. When `resolved`, Demo also gets a DerivedData folder like the one Xcode
-/// makes, with empty checkouts.
+/// Packages/Settings, a folder dragged into the project. Packages/Logging is a folder too,
+/// but no target links it; only Settings uses it. The workspace also lists a Tools package
+/// folder. When `resolved`, Demo also gets a DerivedData folder like the one Xcode makes,
+/// with empty checkouts.
 struct DemoProject {
     let folder: URL
     let isWorkspace: Bool
@@ -37,10 +38,12 @@ struct DemoProject {
         try fileManager.createDirectory(at: xcodeproj, withIntermediateDirectories: true)
         try fixture("xcode-demo", withExtension: "pbxproj").write(to: xcodeproj.appendingPathComponent("project.pbxproj"))
         // Only a folder with a Package.swift is a package; Assets is a plain folder.
-        for name in ["Packages/Feature", "Packages/Settings", "Assets"] {
+        for name in ["Packages/Feature", "Packages/Settings", "Packages/Logging", "Assets"] {
             try fileManager.createDirectory(at: folder.appendingPathComponent(name), withIntermediateDirectories: true)
         }
-        try Data().write(to: folder.appendingPathComponent("Packages/Settings/Package.swift"))
+        for name in ["Settings", "Logging"] {
+            try Data().write(to: folder.appendingPathComponent("Packages/\(name)/Package.swift"))
+        }
 
         // A CocoaPods workspace lists the app project, Pods/Pods.xcodeproj and a Tools package,
         // and holds Package.resolved.
@@ -108,7 +111,8 @@ struct FakeManifests: ManifestReader {
         "swift-concurrency-extras": .fake("swift-concurrency-extras", uses: [], declaresAlso: ["swift-docc-plugin"]),
         "swift-issue-reporting": .fake("swift-issue-reporting", uses: [], declaresAlso: ["swift-docc-plugin"]),
         "Feature": .fake("Feature", uses: ["swift-dependencies"]),
-        "Settings": .fake("Settings", uses: ["feature"]),
+        "Settings": .fake("Settings", uses: ["feature", "logging"]),
+        "Logging": .fake("Logging", uses: []),
         "Tools": .fake("Tools", uses: []),
     ]
 

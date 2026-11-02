@@ -8,6 +8,7 @@
 
 /* Begin PBXFileReference section */
 		D10000000000000000000007 /* Settings */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Settings; sourceTree = "<group>"; };
+		D1000000000000000000000B /* Logging */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Logging; sourceTree = "<group>"; };
 		D10000000000000000000008 /* Assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Assets; sourceTree = "<group>"; };
 		D1000000000000000000000A /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -26,6 +27,7 @@
 			isa = PBXGroup;
 			children = (
 				D10000000000000000000007 /* Settings */,
+				D1000000000000000000000B /* Logging */,
 			);
 			path = Packages;
 			sourceTree = "<group>";
@@ -90,6 +92,18 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D10000000000000000000003 /* XCRemoteSwiftPackageReference "swift-dependencies" */;
 			productName = Dependencies;
+		};
+		D1000000000000000000000C /* Settings */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Settings;
+		};
+		D1000000000000000000000D /* Tools */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Tools;
+		};
+		D1000000000000000000000E /* LintPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = "plugin:LintPlugin";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

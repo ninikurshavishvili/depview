@@ -33,7 +33,21 @@ enum SwiftCLI {
             throw DepViewError.swiftNotFound
         default:
             let errors = (try? String(contentsOf: errorLog, encoding: .utf8)) ?? ""
-            throw DepViewError.swiftCommandFailed(output: errors.trimmingCharacters(in: .whitespacesAndNewlines))
+            throw DepViewError.swiftCommandFailed(output: errorLines(in: errors))
         }
+    }
+
+    /// The error lines in what SwiftPM printed, without the compiler command it adds to a
+    /// broken manifest's error, the code excerpts, or warnings. All of it if there are none.
+    static func errorLines(in output: String) -> String {
+        let lines = output.split(separator: "\n").map(String.init).filter { line in
+            // Excerpt lines start with spaces or "6 |"; file errors with a path.
+            guard let first = line.first, !first.isWhitespace, !first.isNumber else { return false }
+            return line.hasPrefix("error:") || line.contains(": error:")
+        }
+        guard !lines.isEmpty else { return output.trimmingCharacters(in: .whitespacesAndNewlines) }
+        return lines
+            .map { $0.replacing(#/ \(compiled with: \[.*\]\)/#, with: "") }
+            .joined(separator: "\n")
     }
 }

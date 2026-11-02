@@ -24,8 +24,29 @@ struct XcodeLoaderTests {
         let graph = try makeLoader(demo).load(from: demo.project)
         #expect(Set(graph.nodes.keys) == [
             "demo.xcodeproj", "swift-dependencies", "combine-schedulers", "swift-clocks",
-            "swift-concurrency-extras", "swift-issue-reporting", "feature", "settings",
+            "swift-concurrency-extras", "swift-issue-reporting", "feature", "settings", "logging",
         ])
+    }
+
+    // Logging is a package folder in the project, but only Settings uses it.
+    @Test func packageFolderNoTargetLinksIsntADirectDependency() throws {
+        let demo = try DemoProject()
+        defer { demo.remove() }
+        let graph = try makeLoader(demo).load(from: demo.project)
+        #expect(graph.nodes[graph.rootID]?.children == ["swift-dependencies", "feature", "settings"])
+        #expect(graph.nodes["settings"]?.children == ["feature", "logging"])
+    }
+
+    @Test func leavesOutPackagesTheAppDoesntReach() throws {
+        let demo = try DemoProject()
+        defer { demo.remove() }
+        var manifests = FakeManifests()
+        manifests.byFolder["Settings"] = .fake("Settings", uses: ["feature"])
+        let graph = try makeLoader(demo, manifests: manifests).load(from: demo.project)
+        #expect(graph.nodes["logging"] == nil)
+        #expect(throws: DepViewError.self) {
+            try WhyQuery().run("Logging", in: graph)
+        }
     }
 
     @Test func versionsAndURLsComeFromPackageResolved() throws {
@@ -49,7 +70,8 @@ struct XcodeLoaderTests {
             ├── Feature
             │   └── swift-dependencies 1.17.2 (seen above)
             └── Settings
-                └── Feature (seen above)
+                ├── Feature (seen above)
+                └── Logging
             """)
         #expect(warnings.count == 1)
         #expect(warnings.first?.contains("Xcode hasn't downloaded Demo's packages yet") == true)
@@ -61,7 +83,7 @@ struct XcodeLoaderTests {
         var loader = makeLoader(demo)
         loader.derivedDataRoot = demo.folder.appendingPathComponent("nowhere")
         loader.derivedData = demo.derivedData
-        #expect(try loader.load(from: demo.project).nodes.count == 8)
+        #expect(try loader.load(from: demo.project).nodes.count == 9)
     }
 
     @Test func givenFolderWithoutPackagesThrows() throws {
@@ -91,7 +113,7 @@ struct XcodeLoaderTests {
         let (graph, warnings) = try makeLoader(demo).loadWithWarnings(from: demo.project)
         #expect(graph.rootID == "demo.xcworkspace")
         #expect(graph.nodes[graph.rootID]?.children == ["swift-dependencies", "feature", "settings", "tools"])
-        #expect(graph.nodes.count == 9)
+        #expect(graph.nodes.count == 10)
         #expect(graph.nodes["swift-dependencies"]?.version == "1.17.2")
         #expect(warnings.count == 1)
         #expect(warnings.first?.contains("CocoaPods") == true)
