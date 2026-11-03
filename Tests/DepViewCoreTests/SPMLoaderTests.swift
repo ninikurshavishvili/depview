@@ -53,6 +53,39 @@ struct SPMLoaderTests {
         #expect(graph.nodes[id]?.children == [])
     }
 
+    // SwiftPM prints "unspecified" for a branch or a commit; Package.resolved says which.
+    @Test func pinsComeFromPackageResolved() throws {
+        let output = Data("""
+            {"identity": "app", "name": "App", "url": "/Users/dev/Projects/App", "version": "unspecified",
+             "dependencies": [
+               {"identity": "kit", "name": "Kit", "url": "https://github.com/dev/kit", "version": "unspecified", "dependencies": []},
+               {"identity": "net", "name": "Net", "url": "https://github.com/dev/net", "version": "2.0.0", "dependencies": []}
+             ]}
+            """.utf8)
+        let pins = [PackagePin(identity: "kit", location: "https://github.com/dev/kit", version: "main", pin: .branch)]
+        let graph = try SPMLoader.parse(output, pins: pins)
+        #expect(graph.nodes["kit"]?.version == "main")
+        #expect(graph.nodes["kit"]?.pin == .branch)
+        #expect(graph.nodes["net"]?.pin == .release)
+        #expect(graph.nodes["app"]?.pin == nil)
+    }
+
+    @Test func readsEachPackagesLicenseFile() throws {
+        let folder = try temporaryFolder()
+        defer { try? FileManager.default.removeItem(at: folder) }
+        try Data("MIT License".utf8).write(to: folder.appendingPathComponent("LICENSE"))
+        let output = Data("""
+            {"identity": "app", "name": "App", "url": "/Users/dev/Projects/App", "version": "unspecified",
+             "path": "\(folder.path)",
+             "dependencies": [{"identity": "kit", "name": "Kit", "url": "https://github.com/dev/kit", "version": "1.0.0",
+                               "path": "\(folder.path)", "dependencies": []}]}
+            """.utf8)
+        let graph = try SPMLoader.parse(output, readsLicenses: true)
+        #expect(graph.nodes["kit"]?.license == "MIT")
+        // The project's own license isn't one of its dependencies'.
+        #expect(graph.nodes["app"]?.license == nil)
+    }
+
     @Test func skipsProgressLinesBeforeJSON() throws {
         let output = Data("Fetching https://github.com/apple/swift-argument-parser\n".utf8) + (try fixture("spm-tiny"))
         #expect(try SPMLoader.parse(output).nodes.count == 2)

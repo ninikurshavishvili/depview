@@ -122,7 +122,9 @@ public struct XcodeLoader: GraphLoader {
                 break
             }
             nodes[id] = DependencyNode(id: id, name: package.name, version: pins[id]?.version,
-                                       url: pins[id]?.location ?? package.url, children: children)
+                                       url: pins[id]?.location ?? package.url, children: children,
+                                       pin: pins[id]?.pin,
+                                       license: package.folder.flatMap(LicenseFile.license(inPackageAt:)))
         }
 
         // A package folder is one of the app's own dependencies only if a target links one of

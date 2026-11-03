@@ -49,7 +49,10 @@ struct ExportTests {
         let packages = try #require(document["packages"] as? [[String: Any]])
         #expect(packages.map { $0["id"] as? String } == ["depview", "swift-argument-parser"])
         #expect(packages[0]["version"] is NSNull)
+        #expect(packages[0]["pin"] is NSNull)
+        #expect(packages[0]["license"] is NSNull)
         #expect(packages[1]["version"] as? String == "1.8.2")
+        #expect(packages[1]["pin"] as? String == "release")
         #expect(packages[0]["dependencies"] as? [String] == ["swift-argument-parser"])
     }
 }

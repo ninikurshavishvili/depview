@@ -18,6 +18,16 @@ public struct Style: Sendable {
     func bold(_ text: String) -> String { wrap(text, code: "1") }
     func dim(_ text: String) -> String { wrap(text, code: "2") }
     func cyan(_ text: String) -> String { wrap(text, code: "36") }
+    func magenta(_ text: String) -> String { wrap(text, code: "35") }
+    func yellow(_ text: String) -> String { wrap(text, code: "33") }
+
+    /// A package's name: magenta for a local package, like the app's own modules.
+    func name(_ node: DependencyNode) -> String { node.isLocal ? magenta(node.name) : node.name }
+
+    /// A package's version: cyan for a release, yellow for a branch or a commit.
+    func version(_ node: DependencyNode) -> String? {
+        node.versionText.map { node.isUnreleased ? yellow($0) : cyan($0) }
+    }
 
     private func wrap(_ text: String, code: String) -> String {
         isEnabled && !text.isEmpty ? "\u{1B}[\(code)m\(text)\u{1B}[0m" : text

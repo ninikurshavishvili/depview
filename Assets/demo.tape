@@ -9,9 +9,9 @@
 Output Assets/demo.gif
 
 Set Shell "zsh"
-Set FontSize 18
-Set Width 1200
-Set Height 760
+Set FontSize 15
+Set Width 1100
+Set Height 1000
 Set Padding 24
 Set Theme "Catppuccin Mocha"
 Set TypingSpeed 60ms
@@ -21,28 +21,24 @@ Type "cd ~/Developer/IceCubesApp && clear"
 Enter
 Show
 
-Type "depview tree --depth 2"
+Type "depview tree"
 Sleep 500ms
 Enter
 Wait
-Sleep 3s
+Sleep 5s
 
 Type "clear"
 Enter
-Type "depview why SQLite.swift"
-Sleep 500ms
-Enter
-Wait
-Sleep 2s
-
-Type "depview why ButtonKit"
-Sleep 500ms
-Enter
-Wait
-Sleep 2s
-
-Type "depview stats"
+Type "depview why SwiftSoup"
 Sleep 500ms
 Enter
 Wait
 Sleep 4s
+
+Type "clear"
+Enter
+Type "depview stats"
+Sleep 500ms
+Enter
+Wait
+Sleep 5s

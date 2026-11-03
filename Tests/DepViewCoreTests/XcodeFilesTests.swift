@@ -91,7 +91,7 @@ struct XcodeFilesTests {
         #expect(pins.count == 5)
         #expect(pins.first == PackagePin(identity: "combine-schedulers",
                                          location: "https://github.com/pointfreeco/combine-schedulers",
-                                         version: "1.2.2"))
+                                         version: "1.2.2", pin: .release))
     }
 
     // A branch pin shows the branch, and a commit pin a short hash.
@@ -99,6 +99,7 @@ struct XcodeFilesTests {
         let pins = try #require(PackageResolved.pins(from: fixture("xcode-resolved-v2")))
         #expect(pins.map(\.identity) == ["swift-collections", "swift-dependencies", "swift-syntax"])
         #expect(pins.map(\.version) == ["main", "1.17.2", "0687f71"])
+        #expect(pins.map(\.pin) == [.branch, .release, .commit])
     }
 
     @Test func readsResolvedVersion1() throws {

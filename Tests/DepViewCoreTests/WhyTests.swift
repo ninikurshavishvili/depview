@@ -91,18 +91,53 @@ struct WhyTests {
 
     @Test func rendersHowManyPathsAreHidden() throws {
         let output = WhyRenderer().render(try WhyQuery(limit: 20).run("target", in: lattice()))
-        let lines = output.split(separator: "\n")
-        #expect(lines.first == "target is pulled in by 32 paths:")
+        let lines = output.split(separator: "\n", omittingEmptySubsequences: false)
+        #expect(lines.prefix(4) == ["target", "Pulled in by 32 paths.", "Used directly by x5 and y5.", ""])
         #expect(lines.last == "  …and 12 more. Pass --all to list them.")
-        #expect(lines.count == 22)
+        #expect(lines.count == 25)
     }
 
     @Test func singlePathIsSingular() throws {
         let graph = try SPMLoader.parse(fixture("spm-tiny"))
         let output = WhyRenderer().render(try WhyQuery().run("swift-argument-parser", in: graph))
         #expect(output == """
-            swift-argument-parser 1.8.2 is pulled in by 1 path:
+            swift-argument-parser 1.8.2
+            Pulled in by 1 path.
+            depview uses it directly.
+
               depview → swift-argument-parser
             """)
+    }
+
+    // Both ways to lib pass hub, and nothing else uses lib.
+    @Test func saysWhatEveryPathGoesThroughAndWhereToRemoveIt() throws {
+        let graph = makeGraph(root: "app", edges: ["app": ["x", "y"], "x": ["hub"], "y": ["hub"], "hub": ["lib"], "lib": []])
+        let result = try WhyQuery().run("lib", in: graph)
+        #expect(result.through.map(\.id) == ["hub"])
+        #expect(result.usedBy.map(\.id) == ["hub"])
+        #expect(!result.isDirect)
+        #expect(WhyRenderer().render(result).split(separator: "\n").prefix(3) == [
+            "lib",
+            "Pulled in by 2 paths, and every one goes through hub.",
+            "Only hub uses it directly, so that's where to remove lib.",
+        ])
+    }
+
+    @Test func listsFiveDirectUsersAndCountsTheRest() throws {
+        var edges: [String: [String]] = ["app": [], "lib": []]
+        for index in 1...7 {
+            edges["app", default: []].append("a\(index)")
+            edges["a\(index)"] = ["lib"]
+        }
+        let output = WhyRenderer().render(try WhyQuery().run("lib", in: makeGraph(root: "app", edges: edges)))
+        #expect(output.contains("Used directly by a1, a2, a3, a4, a5 and 2 more."))
+    }
+
+    @Test func showsLicenseAndPin() throws {
+        var graph = makeGraph(root: "app", edges: ["app": ["kit"], "kit": []])
+        graph.nodes["kit"] = DependencyNode(id: "kit", name: "Kit", version: "main", url: nil, children: [],
+                                            pin: .branch, license: "MIT")
+        let output = WhyRenderer().render(try WhyQuery().run("kit", in: graph))
+        #expect(output.hasPrefix("Kit branch main  MIT\n"))
     }
 }
