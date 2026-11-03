@@ -1,5 +1,5 @@
-Medium
-└── swift-dependencies 1.17.2
+Medium  5 packages · 1 direct · 3 levels
+└── swift-dependencies 1.17.2  +4
     ├── combine-schedulers 1.2.2
     ├── swift-clocks 1.1.1
     ├── swift-concurrency-extras 1.4.3

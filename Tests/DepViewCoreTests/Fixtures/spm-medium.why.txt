@@ -1,4 +1,7 @@
-swift-concurrency-extras 1.4.3 is pulled in by 3 paths:
+swift-concurrency-extras 1.4.3
+Pulled in by 3 paths, and every one goes through swift-dependencies.
+Used directly by swift-dependencies, combine-schedulers and swift-clocks.
+
   Medium → swift-dependencies → swift-concurrency-extras
   Medium → swift-dependencies → combine-schedulers → swift-concurrency-extras
   Medium → swift-dependencies → swift-clocks → swift-concurrency-extras

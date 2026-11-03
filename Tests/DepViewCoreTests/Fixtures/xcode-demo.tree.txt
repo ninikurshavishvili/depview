@@ -1,15 +1,13 @@
-Demo
-├── swift-dependencies 1.17.2
+Demo  8 packages · 3 direct · 5 levels
+├── swift-dependencies 1.17.2  +4
 │   ├── combine-schedulers 1.2.2
 │   │   ├── swift-concurrency-extras 1.4.3
 │   │   └── swift-issue-reporting 2.1.2
 │   ├── swift-clocks 1.1.1
-│   │   ├── swift-concurrency-extras 1.4.3 (seen above)
-│   │   └── swift-issue-reporting 2.1.2 (seen above)
-│   ├── swift-concurrency-extras 1.4.3 (seen above)
-│   └── swift-issue-reporting 2.1.2 (seen above)
+│   │   └── ↑ swift-concurrency-extras, swift-issue-reporting
+│   └── ↑ swift-concurrency-extras, swift-issue-reporting
 ├── Feature
-│   └── swift-dependencies 1.17.2 (seen above)
-└── Settings
-    ├── Feature (seen above)
-    └── Logging
+│   └── ↑ swift-dependencies
+└── Settings                   +1
+    ├── Logging
+    └── ↑ Feature

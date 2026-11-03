@@ -1,6 +1,6 @@
 /// Finds the chains of packages that pull a package into the graph.
 public struct WhyQuery {
-    public static let defaultLimit = 20
+    public static let defaultLimit = 5
 
     /// The most paths to list. nil lists them all.
     public var limit: Int?
@@ -12,7 +12,8 @@ public struct WhyQuery {
             throw DepViewError.packageNotFound(name: package, suggestions: Self.suggestions(for: package, in: graph))
         }
         guard target.id != graph.rootID else {
-            return WhyResult(package: target, paths: [], totalPaths: 0, isRoot: true)
+            return WhyResult(package: target, rootID: graph.rootID, paths: [], totalPaths: 0, through: [], usedBy: [],
+                             isDirect: false, isRoot: true)
         }
 
         // Only packages that lead to the target are worth walking into.
@@ -42,7 +43,11 @@ public struct WhyQuery {
 
         let total = found.count == limit ? Self.countPaths(to: target.id, in: graph, through: leadsToTarget) : found.count
         let paths = found.map { path in path.compactMap { graph.nodes[$0] } }
-        return WhyResult(package: target, paths: paths, totalPaths: max(total, found.count), isRoot: false)
+        return WhyResult(package: target, rootID: graph.rootID, paths: paths, totalPaths: max(total, found.count),
+                         through: Dominators(graph).through(target.id).compactMap { graph.nodes[$0] },
+                         usedBy: parents[target.id, default: []].compactMap { graph.nodes[$0] },
+                         isDirect: parents[target.id, default: []].contains(graph.rootID),
+                         isRoot: false)
     }
 
     static func find(_ query: String, in graph: DependencyGraph) -> DependencyNode? {
@@ -89,10 +94,17 @@ public struct WhyQuery {
 /// What `WhyQuery` found for one package.
 public struct WhyResult: Equatable, Sendable {
     public let package: DependencyNode
+    public let rootID: String
     /// Paths from the root to the package, shortest first. Each starts with the root.
     public let paths: [[DependencyNode]]
     /// How many paths there are in all. More than `paths.count` when the list was cut off.
     public let totalPaths: Int
+    /// The packages every path goes through, nearest the root first, without the root.
+    public let through: [DependencyNode]
+    /// The packages that depend on it directly, the root among them if it does.
+    public let usedBy: [DependencyNode]
+    /// True when the root depends on it directly.
+    public let isDirect: Bool
     public let isRoot: Bool
 }
 

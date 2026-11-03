@@ -2,14 +2,16 @@ import ArgumentParser
 import DepViewCore
 
 struct Why: ParsableCommand {
-    static let configuration = CommandConfiguration(abstract: "Show every path that pulls a package in.")
+    static let configuration = CommandConfiguration(
+        abstract: "Show why a package is in the project: what every path goes through, who uses it, and the paths."
+    )
 
     @Argument(help: "Package name or identity, e.g. swift-syntax.")
     var package: String
 
     @OptionGroup var project: ProjectOptions
 
-    @Flag(help: "List every path, not only the first 20.")
+    @Flag(help: "List every path, not only the \(WhyQuery.defaultLimit) shortest.")
     var all = false
 
     @OptionGroup var color: ColorOptions

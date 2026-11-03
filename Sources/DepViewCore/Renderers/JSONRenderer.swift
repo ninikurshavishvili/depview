@@ -27,29 +27,36 @@ public struct JSONRenderer {
         let id: String
         let name: String
         let version: String?
+        /// "release", "branch" or "commit"; null for a local package.
+        let pin: Pin?
         let url: String?
+        let license: String?
         let dependencies: [String]
 
         init(_ node: DependencyNode, dependencies: [String]) {
             id = node.id
             name = node.name
             version = node.version
+            pin = node.pin
             url = node.url
+            license = node.license
             self.dependencies = dependencies
         }
 
-        // Writes null for a missing version or URL, so every entry has the same keys.
+        // Writes null for anything missing, so every entry has the same keys.
         func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(id, forKey: .id)
             try container.encode(name, forKey: .name)
             try container.encode(version, forKey: .version)
+            try container.encode(pin, forKey: .pin)
             try container.encode(url, forKey: .url)
+            try container.encode(license, forKey: .license)
             try container.encode(dependencies, forKey: .dependencies)
         }
 
         private enum CodingKeys: String, CodingKey {
-            case id, name, version, url, dependencies
+            case id, name, version, pin, url, license, dependencies
         }
     }
 }

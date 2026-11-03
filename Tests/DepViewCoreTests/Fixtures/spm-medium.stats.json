@@ -1,5 +1,16 @@
 {
   "direct" : 1,
+  "downloaded" : 5,
+  "heaviest" : [
+    {
+      "bringsIn" : 4,
+      "package" : "swift-dependencies"
+    }
+  ],
+  "licenses" : {
+    "unknown" : 5
+  },
+  "local" : 0,
   "maxDepth" : 3,
   "mostShared" : {
     "packages" : [
@@ -8,6 +19,13 @@
     ],
     "usedBy" : 3
   },
+  "onBranch" : [
+
+  ],
+  "onCommit" : [
+
+  ],
   "packages" : 5,
+  "project" : "Medium",
   "transitive" : 4
 }

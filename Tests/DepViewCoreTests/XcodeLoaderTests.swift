@@ -55,7 +55,9 @@ struct XcodeLoaderTests {
         let graph = try makeLoader(demo).load(from: demo.project)
         #expect(graph.nodes["swift-clocks"]?.version == "1.1.1")
         #expect(graph.nodes["swift-clocks"]?.url == "https://github.com/pointfreeco/swift-clocks")
+        #expect(graph.nodes["swift-clocks"]?.pin == .release)
         #expect(graph.nodes["feature"]?.version == nil)
+        #expect(graph.nodes["feature"]?.pin == nil)
         #expect(graph.nodes["feature"]?.name == "Feature")
     }
 
@@ -64,14 +66,14 @@ struct XcodeLoaderTests {
         let demo = try DemoProject(resolved: false)
         defer { demo.remove() }
         let (graph, warnings) = try makeLoader(demo).loadWithWarnings(from: demo.project)
-        #expect(TreeRenderer().render(graph) == """
+        #expect(TreeRenderer(showSummary: false).render(graph) == """
             Demo
             ├── swift-dependencies 1.17.2
             ├── Feature
-            │   └── swift-dependencies 1.17.2 (seen above)
-            └── Settings
-                ├── Feature (seen above)
-                └── Logging
+            │   └── ↑ swift-dependencies
+            └── Settings  +1
+                ├── Logging
+                └── ↑ Feature
             """)
         #expect(warnings.count == 1)
         #expect(warnings.first?.contains("Xcode hasn't downloaded Demo's packages yet") == true)
